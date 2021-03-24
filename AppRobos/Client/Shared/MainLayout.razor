@@ -12,12 +12,12 @@
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <img class="img-fluid" src="https://cdn.pixabay.com/photo/2021/01/02/18/39/syringe-5882593_960_720.jpg" />
+        <img class="img-fluid" src="https://cdn.pixabay.com/photo/2019/05/02/13/04/thief-4173477_1280.jpg" />
         <MudNavMenu Class="mud-width-full">
             <MudDivider Class="my-2"/>
             <MudNavLink Href="/" Icon="@Icons.Filled.Home">Inicio</MudNavLink>
-            <MudNavLink Href="registrar" Icon="@Icons.Filled.MedicalServices">Registrar</MudNavLink>
-            <MudNavLink Href="editar" Icon="@Icons.Filled.LocalHospital">Editar</MudNavLink>
+            <MudNavLink Href="registrar" Icon="@Icons.Filled.AppRegistration">Registrar</MudNavLink>
+            <MudNavLink Href="editar" Icon="@Icons.Filled.Edit">Editar</MudNavLink>
             <MudNavLink Href="exportar" Icon="@Icons.Filled.LocationCity">Exportar</MudNavLink>
         </MudNavMenu>
     </MudDrawer>
@@ -25,7 +25,6 @@
         @Body
     </MudMainContent>
 </MudLayout>
-
 
 @code{
     bool _drawerOpen = true;
