@@ -1,0 +1,42 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">App Robos</MudText>
+        <MudAppBarSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <img class="img-fluid" src="https://cdn.pixabay.com/photo/2021/01/02/18/39/syringe-5882593_960_720.jpg" />
+        <MudNavMenu Class="mud-width-full">
+            <MudDivider Class="my-2"/>
+            <MudNavLink Href="/" Icon="@Icons.Filled.Home">Inicio</MudNavLink>
+            <MudNavLink Href="registrar" Icon="@Icons.Filled.MedicalServices">Registrar</MudNavLink>
+            <MudNavLink Href="editar" Icon="@Icons.Filled.LocalHospital">Editar</MudNavLink>
+            <MudNavLink Href="exportar" Icon="@Icons.Filled.LocationCity">Exportar</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+
+@code{
+    bool _drawerOpen = true;
+
+    void DrawerToggle() {
+        _drawerOpen = !_drawerOpen;
+    }
+    bool Opened = true;
+
+    void ButtonClicked() {
+        Opened = !Opened;
+    }
+
+}
