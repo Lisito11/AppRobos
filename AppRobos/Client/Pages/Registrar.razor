@@ -1,7 +1,101 @@
 ﻿@page "/registrar"
 
-<h3>Registrar</h3>
+@inject ISnackbar Snackbar
+@inject HttpClient Http
+@inject NavigationManager navigationManager
 
-@code {
+<h1>Registrar Robo</h1>
+<MudGrid Justify="Justify.Center">
+    @if (personas != null) {
+        <MudItem xs="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudForm @ref="form" @bind-IsValid="@success">
+                        <MudExpansionPanels>
+                            <MudExpansionPanel Text="Datos Personales">
+                                <MudTextField T="string" Label="Cédula" Required="true" RequiredError="@MensajeError("Cédula")" @bind-Value="@Cedula" />
+                                <MudTextField T="string" Label="Nombres" Required="true" RequiredError="@MensajeError("Nombres")" @bind-Value="@Nombres" />
+                                <MudTextField T="string" Label="Apellidos" Required="true" RequiredError="@MensajeError("Apellidos")" @bind-Value="Apellidos" />
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="Dirección">
+                                <MudGrid Spacing="1">
+                                    <MudItem>
+                                        <MudTextField @bind-Value="CalleDireccion" Label="Calle" Variant="Variant.Text"></MudTextField>
+                                    </MudItem>
+                                    <MudItem sm="4">
+                                        <MudTextField @bind-Value="ProvinciaSeleccionada" Label="Calle" Variant="Variant.Text"></MudTextField>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudExpansionPanel>
+                            <MudExpansionPanel Text="Acerca del robo">
+                                <MudDatePicker Label="Fecha del robo" @bind-Date="FechaRobo" />
+                                <MudTextField T="string" Label="Nombre del objeto" Required="true" RequiredError="@MensajeError("El Nombre del objeto")" @bind-Value="@ObjetoRobado" />
+                                <MudTextField T="string" Label="Precio del objeto" Required="true" RequiredError="@MensajeError("El precio del objeto")" @bind-Value="@PrecioObjetoRobado" />
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    </MudForm>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton OnClick="@RegistrarRobo" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Registrar Robo</MudButton>
+                </MudCardActions>
+            </MudCard>
+
+        </MudItem>
+    }
+</MudGrid>
+
+@code{
+
+    MudForm form;
+    bool showMarker = false;
+    public DateTime? FechaRobo { get; set; }
+    bool success;
+    string MensajeError(string field) => $"{field} debe introducirse!";
+    public string Cedula { get; set; }
+    public string Nombres { get; set; }
+    public string Apellidos { get; set; }
+    public string ProvinciaSeleccionada { get; set; }
+    public string ObjetoRobado { get; set; }
+    public string PrecioObjetoRobado { get; set; }
+    public string Latitud { get; set; }
+    public string Longitud { get; set; }
+    public string CalleDireccion { get; set; }
+    private List<Persona> personas = new List<Persona>();
+    private Geocoding GeocodingDireccion = new Geocoding();
+    Persona persona = new Persona();
+    Persona PersonaValidada = new Persona();
+
+    protected override async Task OnInitializedAsync() {
+        personas = await Http.GetFromJsonAsync<List<Persona>>("api/personas");
+    }
+
+
+    private async Task RegistrarRobo() {
+        if (!String.IsNullOrEmpty(CalleDireccion) && !String.IsNullOrEmpty(ProvinciaSeleccionada)) {
+            GeocodingDireccion = await Http.GetFromJsonAsync<Geocoding>($"https://maps.googleapis.com/maps/api/geocode/json?address={CalleDireccion.Replace(" ", "+")},+{ProvinciaSeleccionada.Replace(" ", "+")}&key=AIzaSyD2tTEiP_uPyq8Re9YnQyD6LkB5TGX1xnw");
+            Latitud = GeocodingDireccion.Results[0].Geometry.Location.Lat.ToString();
+            Longitud = GeocodingDireccion.Results[0].Geometry.Location.Lng.ToString();
+            persona.Cedula = Cedula;
+            persona.Nombres = Nombres;
+            persona.Apellidos = Apellidos;
+            persona.Provincia = ProvinciaSeleccionada;
+            persona.ObjetoRobado = ObjetoRobado;
+            persona.PrecioObjetoRobado = double.Parse(PrecioObjetoRobado);
+            persona.Latitud = double.Parse(Latitud);
+            persona.Longitud = double.Parse(Longitud);
+            var respuestaPersona = await Http.PostAsJsonAsync("api/personas", persona);
+
+            if (respuestaPersona.IsSuccessStatusCode) {
+                Snackbar.Add($"{Nombres} {Apellidos} Registrado correctamente.", Severity.Success);
+                navigationManager.NavigateTo("exportar");
+            }
+            else {
+                Snackbar.Add($"Ha ocurrido un error.", Severity.Error);
+
+            }
+
+        }
+
+    }
 
 }
